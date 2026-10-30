@@ -1,1 +1,58 @@
+/*
+ * PROGRAM DEMO CPM (ANTI-SLEEP POWERBANK EXTREME)
+ * Board: Arduino Uno
+ * Pin Servo: D9
+ */
 
+#include <Servo.h>
+
+Servo servoTendon;
+
+const int pinServo = 9;       
+const int sudutBuka = 0;      
+const int sudutGenggam = 120; 
+const int jedaKecepatan = 30; 
+
+void setup() {
+  Serial.begin(9600); 
+  
+  servoTendon.attach(pinServo); 
+  servoTendon.write(sudutBuka);
+  delay(1000); 
+  
+  Serial.println("Sistem Siap! Memulai Demo...");
+}
+
+void loop() {
+  // 1. FASE FLEKSI (Menarik)
+  Serial.println("Fase 1: Menarik Tendon");
+  for (int sudut = sudutBuka; sudut <= sudutGenggam; sudut++) {
+    servoTendon.write(sudut);
+    delay(jedaKecepatan); 
+  }
+
+  // 2. FASE MENAHAN (Hentakan Anti-Sleep Ekstrem)
+  Serial.println("Fase 2: Menahan (Mode Anti-Sleep Aktif)");
+  for (int i = 0; i < 15; i++) { // Kedutan cepat selama ~3 detik
+    servoTendon.write(sudutGenggam - 5); // Mundur 5 derajat
+    delay(100);                          // Jeda sangat cepat
+    servoTendon.write(sudutGenggam);     // Balik lagi
+    delay(100);
+  }
+
+  // 3. FASE EKSTENSI (Mengulur)
+  Serial.println("Fase 3: Mengulur Tendon");
+  for (int sudut = sudutGenggam; sudut >= sudutBuka; sudut--) {
+    servoTendon.write(sudut);
+    delay(jedaKecepatan);
+  }
+
+  // 4. FASE MENAHAN (Hentakan Anti-Sleep Ekstrem)
+  Serial.println("Fase 4: Terbuka (Mode Anti-Sleep Aktif)");
+  for (int i = 0; i < 15; i++) { // Kedutan cepat selama ~3 detik
+    servoTendon.write(sudutBuka + 5); // Maju 5 derajat
+    delay(100);                       // Jeda sangat cepat
+    servoTendon.write(sudutBuka);     // Balik lagi
+    delay(100);
+  }
+}
